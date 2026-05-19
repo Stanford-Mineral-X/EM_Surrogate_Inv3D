@@ -17,7 +17,7 @@ This repository consists of six modules:
 
 ## Authors
 
-- Zhuo Liu — zliu93@stanford.edu
+- Zhuo Liu — zliu93@stanford.edu, liuzhuolz@outlook.com
 - Jonas Kloeckner — jkloeckn@stanford.edu
 
 ## License
