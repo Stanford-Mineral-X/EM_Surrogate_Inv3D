@@ -1,17 +1,25 @@
-# EM_Surrogate_Inv3D
+# EM Surrogate Inv3D
 
-# Overview
-An example of 3D stochastic inversion with surrogate model speeding up forward modeling. This repo consists of 6 code modules:
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-1. Falsification based on field data to-be-solved (in Python);
-2. Training of EM surrogate model (in Python);
-3. Functions for McMC sampling and Probabilistic Perturbation Method (PPM) (in Julia);
-4. McMC main code (in Julia);
-5. Functions of plotting McMC results (in Julia);
-6. Main code for plotting and examine results  (in Julia).
+## Overview
 
-# Author
-Zhuo Liu, zliu93@stanford.edu \n
-Jonas Kloeckner, jkloeckn@stanford.edu
+An example of 3D stochastic electromagnetic inversion using a surrogate model to accelerate forward modeling.
 
-# 
+This repository consists of six modules:
+
+1. Falsification based on field data to be solved (Python)
+2. Training of EM surrogate model (Python)
+3. Functions for MCMC sampling and Probabilistic Perturbation Method (PPM) (Julia)
+4. Main MCMC inversion code (Julia)
+5. Functions for plotting MCMC results (Julia)
+6. Scripts for visualization and result analysis (Julia)
+
+## Authors
+
+- Zhuo Liu — zliu93@stanford.edu
+- Jonas Kloeckner — jkloeckn@stanford.edu
+
+## License
+
+This project is licensed under the MIT License.
