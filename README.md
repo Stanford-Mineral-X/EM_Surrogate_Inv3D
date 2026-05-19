@@ -1,6 +1,10 @@
 # EM Surrogate Inv3D
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Julia](https://img.shields.io/badge/Julia-1.11-purple)
+
 
 ## Overview
 
