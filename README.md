@@ -14,8 +14,8 @@ This repository consists of six modules:
 
 1. Falsification based on field data to be solved (Python)
 2. Training of EM surrogate model (Python)
-3. Functions for MCMC sampling and Probabilistic Perturbation Method (PPM) (Julia)
-4. Main MCMC inversion code (Julia)
+3. Functions for McMC sampling and Probabilistic Perturbation Method (PPM) (Julia)
+4. Main McMC inversion code (Julia)
 5. Functions for plotting MCMC results (Julia)
 6. Scripts for visualization and result analysis (Julia)
 
