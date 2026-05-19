@@ -11,7 +11,7 @@ An example of 3D stochastic inversion with surrogate model speeding up forward m
 6. Main code for plotting and examine results  (in Julia).
 
 # Author
-Zhuo Liu, zliu93@stanford.edu
+Zhuo Liu, zliu93@stanford.edu \n
 Jonas Kloeckner, jkloeckn@stanford.edu
 
 # 
