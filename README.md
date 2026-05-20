@@ -25,6 +25,28 @@ This repository consists of three main modules:
 - Zhuo Liu — zliu93@stanford.edu, liuzhuolz@outlook.com
 - Jonas Kloeckner — jkloeckn@stanford.edu
 
+## Data Availability
+
+The pre-generated prior datasets (~1.29 GB) are hosted on Hugging Face Datasets due to GitHub's file size limits.
+
+You can download the dataset in two ways:
+
+### Method 1: Manual Download (Web UI)
+1. Visit the [Hugging Face Dataset](https://huggingface.co/datasets/ZLiu93/Generated_prior).
+2. Go to the **Files and versions** tab.
+3. Download the `.npy` files and place them under `Prior falsification/Generated prior/`.
+
+### Method 2: Python Script (Automated)
+You can also download it programmatically using the `huggingface_hub` library:
+```python
+from huggingface_hub import snapshot_download
+
+snapshot_download(
+    repo_id="ZLiu93/Generated_prior", 
+    repo_type="dataset", 
+    local_dir="Prior falsification/Generated prior"
+)
+
 ## License
 
 This project is licensed under the MIT License.
