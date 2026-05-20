@@ -25,27 +25,37 @@ This repository consists of three main modules:
 - Zhuo Liu — zliu93@stanford.edu, liuzhuolz@outlook.com
 - Jonas Kloeckner — jkloeckn@stanford.edu
 
-## Data Availability
+## Data Availability (Large Files)
 
-The pre-generated prior datasets (~1.29 GB) are hosted on Hugging Face Datasets due to GitHub's file size limits.
+Due to GitHub's file size limitations, the pre-generated prior datasets (~1.29 GB) are hosted externally on Hugging Face Datasets. 
 
-You can download the dataset in two ways:
+To run the notebooks successfully, you need to download these files and place them into the correct directory.
 
-- Method 1: Manual Download (Web UI)
-  1. Visit the [Hugging Face Dataset](https://huggingface.co/datasets/ZLiu93/Generated_prior).
-  2. Go to the **Files and versions** tab.
-  3. Download the `.npy` files and place them under `Prior falsification/Generated prior/`.
+- Step 1: Download the Data
+  Visit the [Hugging Face Dataset](https://huggingface.co/datasets/ZLiu93/Generated_prior) to download the following files:
+  * `EMsigma_padded.npy`
+  * `EMsigma_core.npy`
+  * `dpred.npy`
+  * `Hyper_Param.npy`
 
-- Method 2: Python Script (Automated)
-  You can also download it programmatically using the `huggingface_hub` library:
-  ```python
-  from huggingface_hub import snapshot_download
+- Step 2: Place Files in the Correct Directory
+  Create a folder named `Generated prior` inside the `Prior falsification/` directory, and move the downloaded files there.
 
-  snapshot_download(
-    repo_id="ZLiu93/Generated_prior", 
-    repo_type="dataset", 
-    local_dir="Prior falsification/Generated prior"
-  )
+  Your local repository structure **must** look like this:
+  ```text
+   EM_Surrogate_Inv3D/                  <-- Your GitHub Root
+   ├── Surrogate model training/
+   ├── Stochastic inversion with McMC/
+   └── Prior falsification/             <-- The second folder
+       ├── 3D EM prior falsification.ipynb
+       ├── juliapkg.json
+       ├── utils/
+       ├── Test data/
+       └── Generated prior/             <-- ⚠️ PUT YOUR DOWNLOADED FILES HERE
+           ├── EMsigma_padded.npy
+           ├── EMsigma_core.npy
+           ├── dpred.npy
+           └── Hyper_Param.npy
 
 ## License
 
