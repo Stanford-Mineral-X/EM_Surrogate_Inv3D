@@ -10,14 +10,15 @@
 
 An example of 3D stochastic electromagnetic inversion using a surrogate model to accelerate forward modeling.
 
-This repository consists of six modules:
+This repository consists of three main modules:
 
-1. Falsification based on field data to be solved (Python)
+1. Prior falsification based on field data to be solved (Python)
 2. Training of EM surrogate model (Python)
-3. Functions for McMC sampling and Probabilistic Perturbation Method (PPM) (Julia)
-4. Main McMC inversion code (Julia)
-5. Functions for plotting MCMC results (Julia)
-6. Scripts for visualization and result analysis (Julia)
+3. Stochastic inversion with McMC sampling
+   - Functions for McMC sampling and Probabilistic Perturbation Method (PPM) (Julia)
+   - Main McMC inversion code (Julia)
+   - Functions for plotting MCMC results (Julia)
+   - Scripts for visualization and result analysis (Julia)
 
 ## Authors
 
