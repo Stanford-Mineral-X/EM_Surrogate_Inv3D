@@ -1,0 +1,8 @@
+{
+    "julia": "~1.11",
+    "packages": {
+        "GeoStats": {"uuid": "dcc97b0b-8ce5-5539-9008-bb190f959ef6"},
+        "GeoStatsProcesses": {"uuid": "aa102bde-5a27-4b0c-b2c1-e7a7dcc4c3e7"},
+        "Meshes": {"uuid": "eacbb407-ea5a-433e-ab97-5258b1ca43fa"}
+    }
+}
