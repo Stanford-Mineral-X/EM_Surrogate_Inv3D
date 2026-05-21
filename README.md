@@ -82,8 +82,8 @@ To run the notebooks successfully, you need to download these files and place th
    Julia: Navigate to the MCMC directory, activate and instantiate the package environment:
    
    ```bash
-  cd "Stochastic inversion with McMC"
-  julia --project=. -e 'using Pkg; Pkg.instantiate()'
+   cd "Stochastic inversion with McMC"
+   julia --project=. -e "using Pkg; Pkg.instantiate()"
    
 2. Running Inversion
    To start the 3D stochastic EM inversion using PPM MCMC, simply execute the main script:
@@ -91,7 +91,7 @@ To run the notebooks successfully, you need to download these files and place th
    '''Bash
    julia --project=. 3D_EM_Stochastic_Inv.jl'
 
-3. Alternatively, you can run everything in IDE, like `Visual Studio Code`.
+3. Alternatively, you can run everything in IDE, like `Visual Studio Code`.  
    Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as `.jld2` files.
 
 ---
