@@ -6,7 +6,6 @@
 
 An open-source framework for **3D stochastic electromagnetic (EM) inversion** leveraging a deep learning surrogate model to accelerate 3D forward modeling.
 
----
 
 ## 📌 Overview
 This repository providing a complete pipeline from prior validation to accelerated MCMC inversion. It consists of three core modules:
@@ -18,13 +17,11 @@ This repository providing a complete pipeline from prior validation to accelerat
    - Main 3D geophysics inversion execution scripts (Julia).
    - Post-processing, visualization, and result analysis scripts (Julia).
 
----
 
 ## Authors
 - **Zhuo Liu** — zliu93@stanford.edu, liuzhuolz@outlook.com
 - **Jonas Kloeckner** — jkloeckn@stanford.edu
 
----
 
 ## 📦 Repository Structure
 Below is the complete project layout. Please ensure your local file structure matches this perfectly before running the scripts:
@@ -56,7 +53,6 @@ Below is the complete project layout. Please ensure your local file structure ma
    └── README.md
    ```
 
----
 
 ## 💾 Data Availability (Large Files)
 
@@ -74,7 +70,6 @@ To run the notebooks successfully, you need to download these files and place th
 - Step 2: Place Files in the Correct Directory
   Create a folder named `Generated prior` inside the `Prior falsification/` directory, and move the four downloaded files into it (as shown in the repository structure above).
 
----
 
 ## 🚀 Quick Start
 1. Environment Setup
@@ -91,11 +86,11 @@ To run the notebooks successfully, you need to download these files and place th
    ```Bash
    julia --project=. 3D_EM_Stochastic_Inv.jl"
 
-3. Alternatively, you can run everything in IDE, like `Visual Studio Code`. **Infact，this approach is recommended**. 
+3. Alternatively, you can run everything in IDE, like `Visual Studio Code`. **In fact，this approach is recommended**. 
 
 Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as `.jld2` files.
 
----
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
+         
