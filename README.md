@@ -72,9 +72,9 @@ To run the notebooks successfully, you need to download these files and place th
 
 
 ## 🚀 Quick Start
-1. Environment Setup
-   Python: Make sure you have `PyTorch` installed to load the `.pth` surrogate weights.
-   Julia: Navigate to the MCMC directory, activate and instantiate the package environment:
+1. Environment Setup  
+   Python: Make sure you have `PyTorch` installed to load the `.pth` surrogate weights.  
+   Julia: Navigate to the MCMC directory, activate and instantiate the package environment:  
    
    ```bash
    cd "Stochastic inversion with McMC"
