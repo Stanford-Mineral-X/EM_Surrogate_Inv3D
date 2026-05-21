@@ -12,7 +12,7 @@ This repository providing a complete pipeline from prior validation to accelerat
 
 1. **Prior Falsification**: Validates whether the geostatistical prior matches the field data to be solved (Python/Jupyter).
 2. **Surrogate Model Training**: Code and architectures for training the 3D EM forward surrogate model (Python/Jupyter).
-3. **Stochastic Inversion with MCMC**:
+3. **Stochastic Inversion with McMC**:
    - Core functions for **Probabilistic Perturbation Method (PPM)** and MCMC sampling (Julia).
    - Main 3D geophysics inversion execution scripts (Julia).
    - Post-processing, visualization, and result analysis scripts (Julia).
