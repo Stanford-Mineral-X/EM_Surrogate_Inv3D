@@ -12,7 +12,7 @@ An open-source framework for **3D stochastic electromagnetic (EM) inversion** le
 This repository providing a complete pipeline from prior validation to accelerated MCMC inversion. It consists of three core modules:
 
 1. **Prior Falsification**: Validates whether the geostatistical prior matches the field data to be solved (Python/Jupyter).
-2. **Surrogate Model Training**: Code and architectures for training the 3D EM forward surrogate model (Python).
+2. **Surrogate Model Training**: Code and architectures for training the 3D EM forward surrogate model (Python/Jupyter).
 3. **Stochastic Inversion with MCMC**:
    - Core functions for **Probabilistic Perturbation Method (PPM)** and MCMC sampling (Julia).
    - Main 3D geophysics inversion execution scripts (Julia).
@@ -72,26 +72,27 @@ To run the notebooks successfully, you need to download these files and place th
   * `Hyper_Param.npy`
 
 - Step 2: Place Files in the Correct Directory
-  Create a folder named ‘Generated prior’ inside the ‘Prior falsification/’ directory, and move the four downloaded files into it (as shown in the repository structure above).
+  Create a folder named `Generated prior` inside the `Prior falsification/` directory, and move the four downloaded files into it (as shown in the repository structure above).
 
 ---
 
 ## 🚀 Quick Start
 1. Environment Setup
-   Python: Make sure you have PyTorch installed to load the .pth surrogate weights.
+   Python: Make sure you have `PyTorch` installed to load the `.pth` surrogate weights.
    Julia: Navigate to the MCMC directory, activate and instantiate the package environment:
    
-      '''Bash
-      cd "Stochastic inversion with McMC"
-      julia --project=. -e 'using Pkg; Pkg.instantiate()'
+   ```bash
+  cd "Stochastic inversion with McMC"
+  julia --project=. -e 'using Pkg; Pkg.instantiate()'
    
-3. Running Inversion
+2. Running Inversion
    To start the 3D stochastic EM inversion using PPM MCMC, simply execute the main script:
    
-      '''Bash
-      julia --project=. 3D_EM_Stochastic_Inv.jl'
-   
-   Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as .jld2 files.
+   '''Bash
+   julia --project=. 3D_EM_Stochastic_Inv.jl'
+
+3. Alternatively, you can run everything in IDE, like `Visual Studio Code`.
+   Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as `.jld2` files.
 
 ---
 
