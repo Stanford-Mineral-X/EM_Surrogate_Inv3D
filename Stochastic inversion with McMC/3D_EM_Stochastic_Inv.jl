@@ -95,6 +95,6 @@ opt = optimize_ppm_outer_vranges(
 );
 
 # Save dictionary
-jldsave("mcmc_full chain.jld2"; opt)
+jldsave(joinpath(current_dir, "Outputs/mcmc_full_chain.jld2"); opt)    # Save the entire McMC chain to the specified directory
 
 
