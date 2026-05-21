@@ -54,6 +54,7 @@ Below is the complete project layout. Please ensure your local file structure ma
    ├── Surrogate model training/            <-- Module 2: NN Training scripts
    ├── LICENSE
    └── README.md
+   ```
 
 ---
 
@@ -71,24 +72,28 @@ To run the notebooks successfully, you need to download these files and place th
   * `Hyper_Param.npy`
 
 - Step 2: Place Files in the Correct Directory
-  Create a folder named Generated prior inside the Prior falsification/ directory, and move the four downloaded files into it (as shown in the repository structure above).
+  Create a folder named ‘Generated prior’ inside the ‘Prior falsification/’ directory, and move the four downloaded files into it (as shown in the repository structure above).
 
 ---
 
-** 🚀 Quick Start
+## 🚀 Quick Start
 1. Environment Setup
    Python: Make sure you have PyTorch installed to load the .pth surrogate weights.
    Julia: Navigate to the MCMC directory, activate and instantiate the package environment:
-      Bash
+   
+      '''Bash
       cd "Stochastic inversion with McMC"
       julia --project=. -e 'using Pkg; Pkg.instantiate()'
-2. Running Inversion
+   
+3. Running Inversion
    To start the 3D stochastic EM inversion using PPM MCMC, simply execute the main script:
-      Bash
-      julia --project=. 3D_EM_Stochastic_Inv.jl
+   
+      '''Bash
+      julia --project=. 3D_EM_Stochastic_Inv.jl'
+   
    Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as .jld2 files.
 
-
+---
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
