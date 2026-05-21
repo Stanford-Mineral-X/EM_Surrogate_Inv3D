@@ -1,1 +1,14 @@
-wait
+This folder, the "Generated prior", is where the pre-generated large prior datasets supposed to be stored before running the workflows.
+
+Due to GitHub's file size limitations, these files (~1.29 GB) are hosted externally on Hugging Face Datasets.
+
+Please visit the link below to download them:
+👉 https://huggingface.co/datasets/ZLiu93/Generated_prior
+
+After downloading, make sure the following 4 files are placed right here in this folder:
+  1. EMsigma_padded.npy
+  2. EMsigma_core.npy
+  3. dpred.npy
+  4. Hyper_Param.npy
+
+Then, you can open and run "3D EM prior falsification.ipynb" successfully without any file-missing errors.
