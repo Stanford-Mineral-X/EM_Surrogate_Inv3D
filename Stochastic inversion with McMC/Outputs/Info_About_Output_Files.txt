@@ -1,0 +1,5 @@
+This folder, the "Outputs", is where the McMC chain suppsed to be stored after running 3D_EM_Stochastic_Inv.jl file. 
+
+After running, a file named after "mcmc_full_chain.jld2" or whatever you named will be here, in .jld2 format.
+
+Then, run "Results analysis.jl" with your chain file loaded, you can check the results.
