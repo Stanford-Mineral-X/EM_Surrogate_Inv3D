@@ -409,8 +409,13 @@ function optimize_ppm_outer_vranges(
         if iter <= anneal_start
             annealed_r = (max_r, max_r, max_r, max_r)    
         elseif iter < anneal_end
+            # Normalize iteration to [0, 1] for decay function
             t = (iter - anneal_start) / anneal_period
+            
+            # Define a decay function for smooth annealing
             decay(fine, max, decay_rate) = fine + (max - fine) * exp(-decay_rate * t)
+
+            # Apply decay to each r value
             annealed_r = (
                 decay(fine_r, max_r, 4.0),     
                 decay(fine_r, max_r, 4.0),     
@@ -418,6 +423,7 @@ function optimize_ppm_outer_vranges(
                 decay(3*fine_r, max_r, 3.0)    
             )
         else
+            # After annealing period, fix r to fine values
             annealed_r = (fine_r, fine_r, fine_r, 3*fine_r)
         end
 
