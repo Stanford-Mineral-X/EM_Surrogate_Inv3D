@@ -19,8 +19,8 @@ This repository providing a complete pipeline from prior validation to accelerat
 
 
 ## Authors
-- **Zhuo Liu** — zliu93@stanford.edu, liuzhuolz@outlook.com
-- **Jonas Kloeckner** — jkloeckn@stanford.edu
+- **Zhuo Liu** — zliu93@stanford.edu, liuzhuolz@outlook.com  
+- **Jonas Kloeckner** — jkloeckn@stanford.edu  
 
 
 ## 📦 Repository Structure
@@ -56,25 +56,25 @@ Below is the complete project layout. Please ensure your local file structure ma
 
 ## 💾 Data Availability (Large Files)
 
-Due to GitHub's file size limitations, the pre-generated prior datasets (~1.29 GB) are hosted externally on Hugging Face Datasets. 
+Due to GitHub's file size limitations, the pre-generated prior datasets (~1.29 GB) are hosted externally on Hugging Face Datasets.  
 
-To run the notebooks successfully, you need to download these files and place them into the correct directory.
+To run the notebooks successfully, you need to download these files and place them into the correct directory.  
 
-- Step 1: Download the Data
-  Visit the [Hugging Face Dataset](https://huggingface.co/datasets/ZLiu93/Generated_prior) to download the following files:
-  * `EMsigma_padded.npy`
-  * `EMsigma_core.npy`
-  * `dpred.npy`
-  * `Hyper_Param.npy`
+- Step 1: Download the Data  
+  Visit the [Hugging Face Dataset](https://huggingface.co/datasets/ZLiu93/Generated_prior) to download the following files:  
+  * `EMsigma_padded.npy`  
+  * `EMsigma_core.npy`  
+  * `dpred.npy`  
+  * `Hyper_Param.npy`  
 
-- Step 2: Place Files in the Correct Directory
-  Create a folder named `Generated prior` inside the `Prior falsification/` directory, and move the four downloaded files into it (as shown in the repository structure above).
+- Step 2: Place Files in the Correct Directory  
+  Create a folder named `Generated prior` inside the `Prior falsification/` directory, and move the four downloaded files into it (as shown in the repository structure above).  
 
 
 ## 🚀 Quick Start
 1. Environment Setup  
-   Python: Make sure you have `PyTorch` installed to load the `.pth` surrogate weights.  
-   Julia: Navigate to the MCMC directory, activate and instantiate the package environment:  
+   **Python (v3.11)**: Make sure you have `PyTorch` installed to load the `.pth` surrogate weights.  
+   **Julia (v1.11)**: Navigate to the MCMC directory, activate and instantiate the package environment:  
    
    ```bash
    cd "Stochastic inversion with McMC"
