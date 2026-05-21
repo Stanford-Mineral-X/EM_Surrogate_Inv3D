@@ -38,6 +38,9 @@ Below is the complete project layout. Please ensure your local file structure ma
    │       ├── EMsigma_core.npy
    │       ├── dpred.npy
    │       └── Hyper_Param.npy
+   │
+   ├── Surrogate model training/            <-- Module 2: NN Training scripts
+   │
    ├── Stochastic inversion with McMC/      <-- Module 3: MCMC Inversion (Julia)
    │   ├── 3D_EM_Stochastic_Inv.jl          <-- 🚀 MAIN INVERSION RUN SCRIPT
    │   ├── PPM MCMC utils.jl                <-- Inversion helper functions
@@ -48,7 +51,7 @@ Below is the complete project layout. Please ensure your local file structure ma
    │   └── em_surrogate_pack/               <-- Pre-trained U-Net surrogate model
    │       ├── EM 3D Surrogate_Unet.pth     <-- PyTorch Model Weights
    │       └── EM_Unet_surrogate_prediction.py
-   ├── Surrogate model training/            <-- Module 2: NN Training scripts
+   │  
    ├── LICENSE
    └── README.md
    ```
