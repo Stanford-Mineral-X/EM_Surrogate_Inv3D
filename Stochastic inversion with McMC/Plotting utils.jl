@@ -40,7 +40,7 @@ struct MCMCState
     accepted::Bool
 end
 
-# Function to reconstruct 3D fields based on posterior
+
 function reconstruction_fields(
     w_list,
     GP_param_spatial_list,
@@ -49,6 +49,9 @@ function reconstruction_fields(
     grid;
     rng=MersenneTwister(2025)
     )
+    """
+    Function to reconstruct 3D fields based on posterior
+    """
 
     Nx, Ny, Nz = size(grid)
 
@@ -87,7 +90,7 @@ function reconstruction_fields(
     return realization_pred
 end
 
-# Function to get ROI indices based on current parameters (for synthetic test)
+
 function get_roi_indices(
     params; nx=45, ny=20, nz=45, padding=0,
     # Mesh world coordinates from your mesh_info
@@ -151,12 +154,15 @@ end
 
 
 # --- VISUALIZATION FUNCTIONS ---
-# Plot MCMC diagnostics: loss curve, acceptance rate, temperature schedule
 function plot_mcmc_analysis(
     opt;
     target_acc_rate=0.23,
     window = 100
     )
+    """
+    Function to plot MCMC diagnostics: loss curve, acceptance rate, temperature schedule
+    """
+    
     logs = opt.prop_logs
     iters = [l.iter for l in logs]
     losses = [l.loss for l in logs]
@@ -208,18 +214,15 @@ function plot_mcmc_analysis(
 end
 
 
-# Calculate and plot autocorrelation for each parameter
 function plot_acf(
-    opt_result; 
+    opt_result,
+    param_names; 
     max_lag=200, 
     burn_in_ratio=0.2
     )
-    
-    param_names = [
-        "Major Range", "Ratio M-I", "Ratio I-M", 
-        "Yaw", "Pitch", "Roll", 
-        "Sigma Mean", "Sigma Std"
-    ]
+    """
+    Function to calculate and plot autocorrelation for each parameter
+    """
     
     # Discard burn-in period
     full_chain = opt_result.chain
@@ -283,13 +286,15 @@ function plot_acf(
 end
 
 
-# Calculate ESS based on ACF
 function print_ess_report(
     opt_result,
     param_names; 
     max_lag::Int=200,
     burn_in_ratio=0.2 
     )
+    """
+    Function to calculate ESS based on ACF
+    """
 
     full_chain = opt_result.chain
     n_full = length(full_chain)
@@ -426,31 +431,20 @@ end
 
 
 function plot_all_hyper_params_history(
-    opt_list, 
+    opt_list,
+    param_names
     param_ranges
     )
     """
     A function to plot the evolution of all hyper-parameters across iterations
     """
     
-    param_names = [
-        "Major Range (m)", 
-        "Ratio Major-Interm", 
-        "Ratio Interm-Minor", 
-        "Yaw (deg)", 
-        "Pitch (deg)", 
-        "Roll (deg)", 
-        "Sigma Mean", 
-        "Sigma Std"
-    ]
-
     opts = opt_list isa Vector ? opt_list : [opt_list]
     N_real = length(opts)
     N_iter = length(opts[1].chain)
-    N_params = 8 
+    N_params = Int(size(param_names)[1])
     
     fig = CMke.Figure(size=(1600, 700))
-
     for p in 1:N_params
         row = (p - 1) ÷ 4 + 1   
         col = (p - 1) % 4 + 1
@@ -497,7 +491,6 @@ function plot_all_hyper_params_history(
 end
 
 
-# Extract accepted samples after burn-in, with optional filtering and sorting
 function extract_accepted_samples(
     opt; 
     N_needed=50, 
@@ -507,7 +500,8 @@ function extract_accepted_samples(
     loss_threshold=nothing,
     sort_by_loss=true
     )
-    ""
+    """
+    Function to extract accepted samples after burn-in and annealing of step length, with optional filtering and sorting
     """
 
     # Sanity check
@@ -559,7 +553,6 @@ function extract_accepted_samples(
 end
 
 
-# Plot the accepted samples
 function plot_accepted_fits(
     accepted_samples,
     target_signal;
@@ -567,6 +560,9 @@ function plot_accepted_fits(
     N_time=12,
     Rx_loc=nothing
     )
+    """
+    Function to plot the accepted samples
+    """
 
     N_samples = length(accepted_samples)
     if N_samples == 0
