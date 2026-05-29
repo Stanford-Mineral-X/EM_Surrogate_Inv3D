@@ -3,6 +3,8 @@
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange)
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![Julia](https://img.shields.io/badge/Julia-1.12-purple)
+![Reproducibility](https://img.shields.io/badge/reproducibility-passed-brightgreen?style=flat&logo=checkmarx)
+![Tested By](https://img.shields.io/badge/tested%20by-peer%20review-blue)
 
 An open-source framework for **3D stochastic electromagnetic (EM) inversion** leveraging a deep learning surrogate model to accelerate 3D forward modeling.
 
