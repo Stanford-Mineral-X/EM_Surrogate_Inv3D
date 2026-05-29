@@ -78,6 +78,13 @@ plot_signal_comparison(
 # Load files of posterior 
 opt = load(joinpath(current_dir, "Outputs/mcmc_full_chain.jld2"))["opt"];
 
+# Set names of Gaussian-process parameters
+param_names = [
+        "Major Range", "Ratio M-I", "Ratio I-M", 
+        "Yaw", "Pitch", "Roll", 
+        "Sigma Mean", "Sigma Std"
+    ]
+
 # Check temperature, acceptance rate and loss history to see if MCMC has good convergence
  plot_mcmc_analysis(
     opt;
@@ -98,7 +105,8 @@ plot_acf(
 
 # Check ESS of each GP-process params
 print_ess_report(
-    opt; 
+    opt,
+    param_names; 
     max_lag=200
 );
 
