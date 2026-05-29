@@ -96,8 +96,10 @@ To run the notebooks successfully, you need to download these files and place th
             ![VS Code Settings Screenshot](https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753)  
        4. Make sure both Julia Path and LanguageServer are correctly directed in user's setting JSON file (Preference:Open User Settings (JSON) in VSCode). There should be two line as such:
        ```
+       ...
        "julia.languageServerExecutablePath": "/Users/YOUR_NAME/.juliaup/bin/julia",  
        "julia.executablePath": "/Users/YOUR_NAME/.juliaup/bin/julia",
+       ...
        ```
 
 ### 2. Running the Inversion (Recommended Workflow)
