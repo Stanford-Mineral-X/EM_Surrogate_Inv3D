@@ -104,7 +104,7 @@ This repository consists of detailed research scripts rather than a packaged com
    * Open any `.jl` file (e.g., `3D_EM_Stochastic_Inv.jl`).
    * Open the Julia REPL inside VS Code (shortcut: `Alt+J` then `Alt+O`, or `Option+J` then `Option+O` on Mac).
    * Switch to Pkg mode by pressing `]` in the REPL, and run `instantiate` to automatically download all required dependencies.
-4. **Execute Script**: You can now run the main script `3D_EM_Stochastic_Inv.jl` cell-by-cell (using `Shift+Enter`) or by clicking the **"Run File in REPL"** triangle button in the top right corner.
+4. **Execute Script**: You can now run the main script `3D_EM_Stochastic_Inv.jl` line-by-line (using `Shift+Enter`) or by clicking the **"Run File in REPL"** triangle button in the top right corner.
 
 Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as `.jld2` files.
 
