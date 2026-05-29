@@ -2,7 +2,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange)
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
-![Julia](https://img.shields.io/badge/Julia-1.11-purple)
+![Julia](https://img.shields.io/badge/Julia-1.12-purple)
 
 An open-source framework for **3D stochastic electromagnetic (EM) inversion** leveraging a deep learning surrogate model to accelerate 3D forward modeling.
 
@@ -75,21 +75,34 @@ To run the notebooks successfully, you need to download these files and place th
 
 
 ## 🚀 Quick Start
-1. Environment Setup  
-   **Python (v3.11)**: Make sure you have `PyTorch` installed to load the `.pth` surrogate weights.  
-   **Julia (v1.11)**: Navigate to the MCMC directory, activate and instantiate the package environment:  
-   
-   ```bash
-   cd "Stochastic inversion with McMC"
-   julia --project=. -e "using Pkg; Pkg.instantiate()"
-   
-2. Running Inversion
-   To start the 3D stochastic EM inversion using PPM MCMC, simply execute the main script:
-   
-   ```Bash
-   julia --project=. 3D_EM_Stochastic_Inv.jl"
 
-3. Alternatively, you can run everything in IDE, like `Visual Studio Code`. **In fact，this approach is recommended**. 
+### 1. Requirements & Prerequisites
+* For Python Jupyter Notebook:
+  **Python (v3.11)**:
+   - Ensure you have `PyTorch` installed to load the `.pth` surrogate weights.
+   - Actually, **_there is no need to run Python code unless if you want to play with them._**
+* For MCMC stochastic inversion code in Julia:
+  **Julia (v1.12.6)**:
+   - Ensure the Julia executable is installed and added to your system PATH.
+      -> e.g., in VS Code:
+             Seetings>Julia: Executable Path>/JULIA_PATH.
+             <img width="1208" height="804" alt="Screenshot 2026-05-28 at 17 33 24" src="https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753" />
+
+             To find out JULIA_PATH, run "which Julia" in terminal.
+             ```(base) YOUR_PC_NAME ~ % which Julia
+                /Users/$NAME/.juliaup/bin/Julia"
+  
+
+### 2. Running the Inversion (Recommended Workflow)
+This repository consists of detailed research scripts rather than a packaged command-line app. **It is designed to be run entirely within an IDE (Visual Studio Code is highly recommended)** so you can easily adjust parameters, run code blocks interactively, and inspect the inversion results.
+
+1. **Open Project**: Open the repository folder (specifically the `"Stochastic inversion with McMC"` directory) in **VS Code**.
+2. **Install Extensions**: Make sure the official **Julia** extension is installed in VS Code.
+3. **Initialize Environment**: 
+   * Open any `.jl` file (e.g., `3D_EM_Stochastic_Inv.jl`).
+   * Open the Julia REPL inside VS Code (shortcut: `Alt+J` then `Alt+O`, or `Option+J` then `Option+O` on Mac).
+   * Switch to Pkg mode by pressing `]` in the REPL, and run `instantiate` to automatically download all required dependencies.
+4. **Execute Script**: You can now run the main script `3D_EM_Stochastic_Inv.jl` cell-by-cell (using `Shift+Enter`) or by clicking the **"Run File in REPL"** triangle button in the top right corner.
 
 Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as `.jld2` files.
 
