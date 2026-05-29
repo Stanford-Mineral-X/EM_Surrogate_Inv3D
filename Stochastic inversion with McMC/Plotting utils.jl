@@ -701,7 +701,19 @@ function plot_signal_comparison(
             title = "Time Channel $(j)",
             xlabel = "X-offset (m)",
             ylabel = "Bz Data (nT)",
-            titlesize = 14
+            titlesize = 14,
+            
+            # --- Label font size & bold ---
+            xlabelsize = 18,
+            ylabelsize = 18,
+            xlabelfont = :bold,
+            ylabelfont = :bold,
+
+            # --- Tick font size & bold ---
+            xticklabelsize = 14,
+            yticklabelsize = 14,
+            xticklabelfont = :bold,
+            yticklabelfont = :bold,
         )
 
         # Compare predicted signal
@@ -1123,6 +1135,10 @@ function plot_sigma(
     slice_x=nothing, 
     slice_y=nothing, 
     slice_z=nothing,
+    x_length=nothing,
+    y_length=nothing,
+    z_length=nothing,
+    origin=nothing,
     Rx_loc=nothing,
     view_azimuth=45,
     view_elevation=30,
@@ -1130,12 +1146,19 @@ function plot_sigma(
     colorrange=nothing  # 1. Added optional keyword argument
     )
     """ 
-    Quick diagnostic plot: true model vs inverted model.
+    A function to plot a conductivity model
     """
     
     # Make grid
     nx, ny, nz = size(inverted_3d_model)
-    x, y, z = 1:nx, 1:ny, 1:nz
+    if x_length !== nothing && y_length !== nothing && z_length !== nothing
+        x0, y0, z0 = origin !== nothing ? origin : (0.0, 0.0, 0.0)
+        x = range(x0, x0 + x_length, length=nx)
+        y = range(y0, y0 + y_length, length=ny)
+        z = range(z0, z0 + z_length, length=nz)
+    else
+        x, y, z = 1:nx, 1:ny, 1:nz   # fallback to cell indices
+    end
 
     # Prepare slice indices for 3D plotting if not specified
     if slice_x === nothing
@@ -1167,7 +1190,33 @@ function plot_sigma(
         xlabel = "X (Northing)", 
         ylabel = "Y (Easting)", 
         zlabel = "Z (Depth)",
-        title = title_inverted
+        title = title_inverted,
+
+        # --- Label font size & bold ---
+        xlabelsize = 18,
+        ylabelsize = 18,
+        zlabelsize = 18,
+        xlabelfont = :bold,
+        ylabelfont = :bold,
+        zlabelfont = :bold,
+
+        # --- Tick font size & bold ---
+        xticklabelsize = 14,
+        yticklabelsize = 14,
+        zticklabelsize = 14,
+        xticklabelfont = :bold,
+        yticklabelfont = :bold,
+        zticklabelfont = :bold,
+
+        # --- Tick padding (space between tick marks and tick labels) ---
+        #xticklabelpad = 5,
+        #yticklabelpad = 10,
+        #zticklabelpad = 10,
+
+        # --- Tick label padding (space between tick marks and tick labels) ---
+        xlabeloffset = 50,
+        ylabeloffset = 60,
+        zlabeloffset = 60,
     )
 
     # --- Z-slice (horizontal plane at depth z[zi]) ---
@@ -1223,11 +1272,14 @@ function plot_sigma(
         label=scale=="ln" ? "Inverted Conductivity (ln(S/m))" : "Inverted Conductivity (S/m)",
         labelrotation=0,  
         halign=:center,   
-        valign=:bottom,   
-        labelsize=20,     
+        valign=:bottom,      
         width=Relative(0.65),
         height=Relative(0.4),
-        flipaxis=true     
+        flipaxis=true  ,
+        labelsize = 20,
+        labelfont = :bold,   
+        ticklabelsize = 14,  
+        ticklabelfont = :bold,   
     )
 
     if Rx_loc !== nothing
