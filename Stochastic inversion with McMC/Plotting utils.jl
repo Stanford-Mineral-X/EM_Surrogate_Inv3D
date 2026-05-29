@@ -1,6 +1,6 @@
 # --- PACKAGE IMPORTS ---
 using CairoMakie
-const CMke = CairoMakie  #      
+const CMke = CairoMakie
 using KernelDensity
 using CSV, DataFrames
 using Statistics, Distributions
@@ -97,8 +97,13 @@ function get_roi_indices(
     # Curved ellipsoid flag
     is_curved=false
     )
+    """
+    A function to extract region of interest among spatial model.
+    Used for synthetic test with conductivyt of a simple geometry
+    like cube or ellipsoid.(Not for Gaussian field)
+    """
 
-    # --- 1. Extract parameters ---
+    # Extract parameters 
     a        = params[1]
     center_x = params[7]
     center_y = params[8]
@@ -107,7 +112,7 @@ function get_roi_indices(
     # For curved ellipsoid, amplitude expands the Z bounding box
     amplitude = is_curved ? params[10] : 0.0   # params[10] = amplitude if curved
 
-    # --- 2. Build cell centers in world coordinates ---
+    # Build cell centers in world coordinates
     dh_x = (x_max - x_min) / nx
     dh_y = (y_max - y_min) / ny
     dh_z = (z_max - z_min) / nz
@@ -116,7 +121,7 @@ function get_roi_indices(
     cc_y = collect(y_min + dh_y/2 : dh_y : y_max - dh_y/2)  # length ny
     cc_z = collect(z_min + dh_z/2 : dh_z : z_max - dh_z/2)  # length nz
 
-    # --- 3. Find index ranges ---
+    #  Find index ranges
     # X and Y: use major axis a as bounding radius (same as before)
     x_idxs = findall(x -> (center_x - a) <= x <= (center_x + a), cc_x)
     y_idxs = findall(y -> (center_y - a) <= y <= (center_y + a), cc_y)
@@ -126,7 +131,7 @@ function get_roi_indices(
     z_hi = center_z + a + amplitude
     z_idxs = findall(z -> z_lo <= z <= z_hi, cc_z)
 
-    # --- 4. Safe range with padding ---
+    # Safe range with padding
     function get_range(idxs, max_dim)
         if isempty(idxs)
             mid = div(max_dim, 2)
@@ -216,11 +221,10 @@ function plot_acf(
         "Sigma Mean", "Sigma Std"
     ]
     
-    # 1. 自动处理 Burn-in
+    # Discard burn-in period
     full_chain = opt_result.chain
     N_total = length(full_chain)
-    # 找到第一个有效索引
-    start_idx = max(1, Int(floor(N_total * burn_in_ratio)))
+    start_idx = max(1, Int(floor(N_total * burn_in_ratio)))    # Find the index of the first valid sample
     chain = full_chain[start_idx:end]
     N_iter = length(chain)
     
@@ -230,26 +234,23 @@ function plot_acf(
     end
     
     fig = CMke.Figure(size=(1200, 800))
-    
-    # 提前预分配或通过 map 提取所有参数序列，提高效率
     for p in 1:8
-        # 计算子图行列索引
+        # Calculate index of subplot
         row_idx = (p - 1) ÷ 4 + 1
         col_idx = (p - 1) % 4 + 1
         
-        # 2. 提取序列
+        # Extract Gaussian-process parameters
         series = map(chain) do state
             if p <= 6
                 return state.GP_param_spatial[p]
             elseif p == 7
-                return state.GP_param_sigma_mean[1] # 对应 MCMCState 里的 1-element Vector
+                return state.GP_param_sigma_mean[1]
             else
-                return state.GP_param_sigma_std[1]  # 对应 MCMCState 里的 1-element Vector
+                return state.GP_param_sigma_std[1]
             end
         end
         
-        # 3. 计算 ACF 保护逻辑
-        # 如果序列完全没有变化（采样器卡死了），autocor 会失效
+        # Calculate ACF, with sanity check
         if all(x -> x ≈ series[1], series) || std(series) < 1e-9
             vals = zeros(max_lag + 1)
             vals[1] = 1.0  
@@ -257,23 +258,19 @@ function plot_acf(
             vals = autocor(series, 0:max_lag)
         end
         
-        # 替换可能的 NaN
+        # Check and replace NaN if any
         replace!(vals, NaN => 0.0)
-        
+
+        # Make figures
         ax = CMke.Axis(fig[row_idx, col_idx], 
             title="$(param_names[p])", 
             xlabel="Lag", 
             ylabel="Correlation",
             titlesize = 14
         )
-        # 限制 y 轴范围，方便观察
         CMke.ylims!(ax, -0.2, 1.1)
-        
-        # 绘制 Stem 图
         CMke.stem!(ax, 0:max_lag, vals, markersize=4, color=:dodgerblue)
         CMke.hlines!(ax, [0.0], color=:black, linewidth=0.8)
-        
-        # 4. 显著性水平线 (95% 置信区间)
         conf_limit = 1.96 / sqrt(N_iter)
         CMke.hlines!(ax, [conf_limit, -conf_limit], color=:red, linestyle=:dash, linewidth=1)
     end
@@ -288,25 +285,21 @@ end
 
 # Calculate ESS based on ACF
 function print_ess_report(
-    opt_result; 
+    opt_result,
+    param_names; 
     max_lag::Int=200,
-    burn_in_ratio=0.2 # 建议增加 burn-in 过滤，因为初始不稳定的样本会干扰 ESS 计算
+    burn_in_ratio=0.2 
     )
 
     full_chain = opt_result.chain
     n_full = length(full_chain)
     
-    # 过滤掉 Burn-in 期
+    # Discard burn-in period
     start_idx = max(1, Int(floor(n_full * burn_in_ratio)))
     chain = full_chain[start_idx:end]
     n_total = length(chain)
-    
-    param_names = [
-        "Major Range", "Ratio M-I", "Ratio I-M", 
-        "Yaw", "Pitch", "Roll", 
-        "Sigma Mean", "Sigma Std"
-    ]
-    
+
+    # Print table header
     println("\n" * "="^60)
     println("      MCMC Efficiency Report (ESS Analysis - Post Burn-in)")
     @printf("      Chain Length: %d | Burn-in Ratio: %.1f\n", n_total, burn_in_ratio)
@@ -314,8 +307,8 @@ function print_ess_report(
     @printf("%-15s | %-10s | %-12s | %-10s\n", "Parameter", "ESS", "Efficiency", "Total Samples")
     println("-"^60)
 
+    # Extract Gaussian-process parameter
     for i in 1:8
-        # 1. 提取数值向量 (适配回滚后的 MCMCState)
         if i <= 6
             values = map(s -> s.GP_param_spatial[i], chain)
         elseif i == 7
@@ -324,36 +317,35 @@ function print_ess_report(
             values = map(s -> s.GP_param_sigma_std[1], chain)
         end
 
-        # 预防性检查：如果参数从未发生变化（100% 被拒或参数范围太窄）
+        # Sanity check
         if all(x -> x ≈ values[1], values)
             @printf("%-15s | %-10.1f | %-10.2f%% | %-10d (Stuck?)\n", 
                 param_names[i], 1.0, (1.0/n_total)*100, n_total)
             continue
         end
 
-        # 2. 计算 ACF
+        # Calcualte ACF
         actual_max_lag = min(max_lag, n_total - 1)
         lags = 0:actual_max_lag
         rho = autocor(values, lags)
 
-        # 3. 改进的有效相关和计算 (Geyer's Initial Positive Sequence)
-        # ESS = N / (1 + 2 * sum(rho))
+        # 3. Improved Effective Sample Size (ESS) Calculation (Geyer's Initial Positive Sequence)
         sum_rho = 0.0
         for k in 2:length(rho)
-            # 停止准则：当自相关非常小，或者开始上下波动时停止累加，避免噪声干扰
+            # Stopping criterion: Terminate summation when autocorrelation is negligible 
+            # or starts fluctuating, minimizing noise interference.
             if rho[k] < 0.01 
                 break
             end
-            # 保证自相关和是正向贡献，避免估计过度乐观
+            # Ensure positive contribution to avoid overly optimistic ESS estimates.
             sum_rho += max(0.0, rho[k])
             
-            # 额外的鲁棒性：如果自相关太大（例如 > 0.9 持续 200 个 lag），说明混合极差
+            # Additional robustness check: Persistent high autocorrelation indicates poor mixing.
             if k == actual_max_lag && rho[k] > 0.5
-                # 可以选择在这里 print 一个警告
             end
         end
 
-        # 4. 计算 ESS 和 效率
+        # 4. Calculate ESS and efficiency
         ess = n_total / (1.0 + 2.0 * sum_rho)
         eff = (ess / n_total) * 100
 
@@ -364,11 +356,14 @@ function print_ess_report(
 end
 
 
-# Print trace plots of r values across iterations
 function plot_r_evolution(
     prop_logs::Vector{ProposalLog}
     )
-    # --- 1. 数据提取部分完全保持不动 ---
+    """
+    A function to print trace plots of r values across iterations
+    """
+
+    # Extract recorded r-values used in PPM
     iters = [log.iter for log in prop_logs]
     stages = [log.stage_indicator for log in prop_logs]
     accepts = [log.accepted for log in prop_logs]
@@ -382,14 +377,12 @@ function plot_r_evolution(
     acc_s2_idx = findall(i -> stages[i] == 2 && accepts[i], 1:length(accepts))
     rej_idx = findall(.!accepts)
 
-    # --- 2. 布局调整 ---
-    # 增加宽度 (1200 -> 1400) 给右侧 Legend 留位置
+    # Setup canvas
     fig = CMke.Figure(size=(1400, 800))
-    
     titles = ["r_spatial", "r_sigma_mean", "r_sigma_std", "r_field"]
     r_data = [r_spatial, r_mean, r_std, r_field]
     
-    local last_ax # 用于存最后一个坐标轴给 Legend 用
+    local last_ax    # Used to store the last coordinate axis for use by Legend
 
     for i in 1:4
         row = (i - 1) ÷ 2 + 1
@@ -401,7 +394,7 @@ function plot_r_evolution(
             ylabel="r value",
             limits=(nothing, (0, 1.1))
         )
-        last_ax = ax # 记录下来
+        last_ax = ax
         
         CMke.scatter!(ax, iters[rej_idx], r_data[i][rej_idx], 
                      color=(:grey, 0.2), markersize=3, label="Rejected")
@@ -415,15 +408,12 @@ function plot_r_evolution(
             CMke.scatter!(ax, iters[acc_s2_idx], r_data[i][acc_s2_idx], 
                          color=:darkorchid, markersize=6, label="Stage 2 Acc.")
         end
-        
-        # 删掉了原来的 axislegend(ax...)
     end
 
-    # --- 3. 放置统一的 Legend ---
-    # 将 Legend 放在第 1 到 2 行的第 3 列（即整个右侧）
+    # Setup legend
     CMke.Legend(fig[1:2, 3], last_ax, "Status", framevisible = true, halign = :left)
     
-    # 微调右侧列宽和间距
+    # Config gap
     CMke.colsize!(fig.layout, 3, CMke.Fixed(150))
     CMke.colgap!(fig.layout, 20)
 
@@ -435,12 +425,14 @@ function plot_r_evolution(
 end
 
 
-# Plot the evolution of all hyper-parameters across iterations
 function plot_all_hyper_params_history(
     opt_list, 
     param_ranges
     )
-
+    """
+    A function to plot the evolution of all hyper-parameters across iterations
+    """
+    
     param_names = [
         "Major Range (m)", 
         "Ratio Major-Interm", 
@@ -689,15 +681,15 @@ function plot_signal_comparison(
 
     @assert Rx_loc !== nothing "Receiver locations (Rx_loc) must be provided."
     
-    # 获取 X 坐标（取前 N_obs 个点）
+    # Get x-coordinate
     x_coords = Rx_loc[1:N_obs, 1]
     N_real = length(best_signal)
 
-    # --- 布局逻辑更新 ---
-    cols = min(4, N_time) # 最多 4 列
+    # Update layout logic
+    cols = min(4, N_time)
     rows = ceil(Int, N_time / cols)
     
-    # 调整画布尺寸计算，给标题和图例留出空间
+    # Setup canvas size
     fig = CMke.Figure(size=(450 * cols, 350 * rows + 120), backgroundcolor=:white)
 
     for j in 1:N_time
@@ -712,9 +704,8 @@ function plot_signal_comparison(
             titlesize = 14
         )
 
-        # 1. 绘制对比信号 (Ensemble/Best fit)
+        # Compare predicted signal
         for i in 1:N_real
-            # 兼容 best_signal 是 Vector of Vectors 的情况
             sig_segment = best_signal[i][(j - 1) * N_obs + 1 : j * N_obs]
             CMke.lines!(
                 ax, x_coords, sig_segment; 
@@ -723,13 +714,13 @@ function plot_signal_comparison(
             )
         end
 
-        # 2. 绘制目标信号 (True/Target)
+        # Plot target signal
         target_segment = target_signal[(j - 1) * N_obs + 1 : j * N_obs]
         
-        # 红线
+        # Red line
         CMke.lines!(ax, x_coords, target_segment, color = :red, linewidth = 2.5)
         
-        # 红点
+        # Red dots
         CMke.scatter!(
             ax, x_coords, target_segment, 
             color = :red, 
@@ -738,7 +729,7 @@ function plot_signal_comparison(
             strokecolor = :white
         )
 
-        # 3. 绘制误差棒
+        # Plot error bars
         if signal_error_std !== nothing
             err_segment = signal_error_std[(j - 1) * N_obs + 1 : j * N_obs]
             CMke.errorbars!(
@@ -750,7 +741,7 @@ function plot_signal_comparison(
         end
     end
 
-    # --- 图例与标题 (与 plot_accepted_fits 保持一致) ---
+    # Add legend and Title
     group_target = [
         CMke.LineElement(color = :red, linewidth = 2.5),
         CMke.MarkerElement(color = :red, marker = :circle, markersize = 10, strokecolor = :white)
@@ -770,10 +761,16 @@ function plot_signal_comparison(
         tellwidth = false
     )
 
-    CMke.Label(fig[0, :], "Data Comparison: Target vs $compared_label", 
-             fontsize = 22, font = :bold)
+    # Setup figure title
+    if best_signal != []
+        CMke.Label(fig[0, :], "Data Comparison: Target vs $compared_label", 
+                fontsize = 22, font = :bold)
+    else
+        CMke.Label(fig[0, :], compared_label, 
+                fontsize = 22, font = :bold)
+    end
 
-    # 调整间距，防止坐标轴文字重叠
+    # Adjust the spacing to prevent the axis labels from overlapping.
     CMke.rowgap!(fig.layout, 30)
     CMke.colgap!(fig.layout, 20)
 
@@ -783,28 +780,24 @@ end
 
 
 function plot_post_hyper_param_hist(
-    samples;             
+    samples,
+    param_names;             
     param_ranges=nothing,
     true_params=nothing,
     title="Posterior Distribution of Hyper-parameters"
     )
     
-    # 1. 安全检查
+    # Sanity check
     N_samples = length(samples)
     if N_samples == 0
         @warn "No samples provided for histogram plotting."
         return nothing
     end
     
-    # 2. 定义基本信息 (放在循环和数据提取之前)
-    N_params = 8
-    param_names = [
-        "Major Range (m)", "Ratio M-I", "Ratio I-M", 
-        "Yaw (deg)", "Pitch (deg)", "Roll (deg)", 
-        "Sigma Mean", "Sigma Std"
-    ]
+    # Get number of Gaussian-process parameters
+    N_params = int(size(param_names)[1])
 
-    # 3. 初始化并提取数据矩阵 (定义 post_mat)
+    # Initialization and obtain Gaussian-process parameters
     post_mat = zeros(N_samples, N_params)
     for i in 1:N_samples
         post_mat[i, 1:6] = samples[i].GP_param_spatial
@@ -812,12 +805,11 @@ function plot_post_hyper_param_hist(
         post_mat[i, 8]   = samples[i].GP_param_sigma_std[1]
     end
 
-    # 4. 创建 Figure
-    # 注意：为了放下右侧图例而不压缩图形，我们给第 5 列分配一个相对小的宽度
+    # Make Figure
     fig = CMke.Figure(size=(1450, 750))
     CMke.Label(fig[0, 1:4], text=title, fontsize=24, font=:bold)
 
-    # 5. 循环绘图
+    # Plot for each parameter
     for j in 1:N_params
         row = (j - 1) ÷ 4 + 1   
         col = (j - 1) % 4 + 1   
@@ -829,23 +821,23 @@ function plot_post_hyper_param_hist(
             ylabel = "Frequency"
         )
 
-        # 绘制直方图
+        # Plot histogram
         CMke.hist!(ax, post_mat[:, j], bins=25, color=(:dodgerblue, 0.5), strokewidth=1, strokecolor=:black)
 
-        # 绘制先验范围
+        # Plot range of prior
         if param_ranges !== nothing   
             p_min, p_max = param_ranges[j]
             CMke.vlines!(ax, [p_min, p_max], color=:grey40, linestyle=:dash, linewidth=2)
             CMke.xlims!(ax, p_min - 0.1*(p_max-p_min), p_max + 0.1*(p_max-p_min))
         end
 
-        # 绘制真实值
+        # plot true parameter is available
         if true_params !== nothing
             CMke.vlines!(ax, [true_params[j]], color=:red, linewidth=3)
         end
     end
 
-    # --- 6. 统一图例：放在第 5 列，这样不会挤压前 4 列的宽度 ---
+    # Add legend
     labels = ["Posterior", "Prior Range"]
     elements = [
         CMke.PolyElement(color=(:dodgerblue, 0.5), strokecolor=:black, strokewidth=1),
@@ -857,7 +849,7 @@ function plot_post_hyper_param_hist(
         push!(elements, CMke.LineElement(color=:red, linewidth=3))
     end
 
-    # 图例放在右侧边缘，跨越两行
+    # Position legend
     CMke.Legend(fig[1:2, 5], elements, labels, framevisible=false, halign=:left)
 
     CMke.rowgap!(fig.layout, 40)
@@ -869,56 +861,48 @@ end
 
 
 function plot_acc_hyper_params_history(
-    samples::Vector{MCMCState},    # 仅包含被接受的 proposals
-    param_ranges
+    samples::Vector{MCMCState},    # only accepted proposals
+    param_ranges,
+    param_names
     )
 
-    param_names = [
-        "Major Range (m)", "Ratio Major-Interm", "Ratio Interm-Minor", 
-        "Yaw (deg)", "Pitch (deg)", "Roll (deg)", 
-        "Sigma Mean", "Sigma Std"
-    ]
-
+    # Sanity check
     N_acc = length(samples)
     if N_acc == 0
         @warn "No accepted samples provided for trace plotting."
         return nothing
     end
-    
-    N_params = length(param_names)
-    
-    # 布局：2行 4列
+
+    # Get number of Gaussian-process parameters
+    N_params = int(size(param_names)[1])
+
+    # Make a figure
     fig = CMke.Figure(size=(1600, 800), fontsize=18)
-    
-    # 标题放置在 1:2 行的上方
     CMke.Label(fig[0, :], "Trace Plot of Accepted Hyper-parameters", fontsize=24, font=:bold)
 
     for p in 1:N_params
         row = (p - 1) ÷ 4 + 1   
         col = (p - 1) % 4 + 1
-        
         p_min, p_max = param_ranges[p]
-
-        # 核心修改：统一 Axis 行为
+        
         ax = CMke.Axis(
             fig[row, col],
             title = param_names[p],
-            # 始终设置 Label，但通过调整可见性来保持占位一致
             xlabel = "Accepted Index",
             ylabel = "Value",
             limits = (nothing, (p_min - 0.1*(p_max-p_min), p_max + 0.1*(p_max-p_min)))
         )
 
-        # 如果不是最左列，隐藏 ylabel 以释放空间并对齐
+        # Hide y-label if not the left-most column
         if col > 1
             ax.ylabelvisible = false
         end
-        # 如果不是最底行，隐藏 xlabel
+        # Hide x-label if not the bottom row
         if row < 2
             ax.xlabelvisible = false
         end
 
-        # --- 数据提取逻辑 (保持不变) ---
+        # Extract parameters
         param_series = Vector{Float64}(undef, N_acc)
         for k in 1:N_acc
             state = samples[k]
@@ -931,15 +915,15 @@ function plot_acc_hyper_params_history(
             end
         end
 
-        # --- 绘图内容 (保持不变) ---
+        # Plot
         CMke.lines!(ax, 1:N_acc, param_series, color = (:black, 0.6), linewidth = 1.2)
         CMke.scatter!(ax, 1:N_acc, param_series, color = :black, markersize = 5, marker = :circle)
         CMke.hlines!(ax, [p_min, p_max], color = :red, linestyle = :dash, linewidth = 1.5)
     end
 
-    # 强制让所有 Axis 的内容区域（Scene）大小相同
+    # Force all axes (subplots) to have same size
     for i in 1:2, j in 1:4
-        CMke.colsize!(fig.layout, j, CMke.Aspect(i, 1.0)) # 这一行可以强制所有列等宽
+        CMke.colsize!(fig.layout, j, CMke.Aspect(i, 1.0)) # Equal width
     end
 
     CMke.rowgap!(fig.layout, 40)
@@ -964,7 +948,15 @@ function kde2d_contour(x, y)
 end
 
 
-function get_contour_levels(k2d, fracs=(0.68, 0.95))
+function get_contour_levels(
+    k2d, fracs=(0.68, 0.95)
+    )
+    """
+    A function to calculate the contour density levels corresponding to 
+    specific enclosed probability fractions (e.g., 68% and 95%) for a 
+    2D probability density function.
+    """
+    
     z     = k2d.density
     zsort = sort(vec(z), rev=true)
     cumz  = cumsum(zsort)
@@ -978,11 +970,15 @@ function get_contour_levels(k2d, fracs=(0.68, 0.95))
 end
 
 
-function plot_hyper_params_cross(acc_samples;
-                     param_names = ["Major Range", "Maj/Int", "Int/Min",
-                                    "Yaw", "Pitch", "Roll",
-                                    "Sigma Mean", "Sigma Std"])
+function plot_hyper_params_cross(
+    acc_samples
+    param_names 
+    )
+    """
+    A function to plot crosscorrelation results of each parameter pair
+    """
 
+    # Extract and reorg parameters
     data = hcat(
         [s.GP_param_spatial[1]    for s in acc_samples],
         [s.GP_param_spatial[2]    for s in acc_samples],
@@ -997,6 +993,7 @@ function plot_hyper_params_cross(acc_samples;
     nsamples, np = size(data)
     cell = 150
 
+    # make plot
     fig = CMke.Figure(
         size            = (np * cell + 120, np * cell + 120),
         backgroundcolor = :white,
@@ -1018,7 +1015,7 @@ function plot_hyper_params_cross(acc_samples;
 
     axs = Matrix{Any}(nothing, np, np)
 
-    # ── Build all axes first, THEN set sizes ───────────────────────────────────
+    # Build all axes first, THEN set sizes
     axis_style = (
         xticklabelsize     = 15,
         yticklabelsize     = 15,
@@ -1108,7 +1105,7 @@ function plot_hyper_params_cross(acc_samples;
         end
     end
 
-    # ── NOW set sizes — grid is populated so columns/rows exist ───────────────
+    # NOW set sizes — grid is populated so columns/rows exist
     for i in 1:np
         CMke.colsize!(gl, i, CMke.Fixed(cell))
         CMke.rowsize!(gl, i, CMke.Fixed(cell))
@@ -1133,7 +1130,7 @@ function plot_sigma(
     colorrange=nothing  # 1. Added optional keyword argument
     )
     """ 
-    Quick diagnostic plot: true model vs invertedmodel.
+    Quick diagnostic plot: true model vs inverted model.
     """
     
     # Make grid
@@ -1153,7 +1150,7 @@ function plot_sigma(
         slice_z = Int(round(nz / 2))
     end
 
-    # 2. Determine limits of color scale if not provided by the user
+    # Determine limits of color scale if not provided by the user
     if colorrange === nothing
         vmin = scale=="ln" ? minimum(inverted_3d_model) : minimum(exp.(inverted_3d_model))
         vmax = scale=="ln" ? maximum(inverted_3d_model) : maximum(exp.(inverted_3d_model))
@@ -1162,9 +1159,6 @@ function plot_sigma(
 
     # Plot 3D slices for two models
     fig = CMke.Figure(size=(600, 800))
-    
-
-    # rue model subplot
     ax = CMke.Axis3(
         fig[1,1], 
         perspectiveness = 0.75,
