@@ -502,14 +502,28 @@ function extract_accepted_samples(
     opt; 
     N_needed=50, 
     thinning=1,
-    burn_in=0.3,
+    burn_in_ratio=0.2,
+    anneal_ratio=0.3
     loss_threshold=nothing,
     sort_by_loss=true
     )
+    ""
+    """
+
+    # Sanity check
+    # Hard constraint: Total ratio cannot exceed 100%
+    @assert burn_in_ratio + anneal_ratio <= 1.0 "The sum of burn_in_ratio ($burn_in_ratio) and anneal_ratio ($anneal_ratio) cannot be greater than 1.0!"
     
-    # Determine the starting index after burn-in
+    # Soft suggestion: Warn if the optimization/warmup phase takes up too much of the chain
+    if burn_in_ratio + anneal_ratio > 0.5
+        @warn "The combined burn-in and annealing ratio is high ($(burn_in_ratio + anneal_ratio) > 0.5). More than half of the samples will be discarded as transient phases!"
+    end
+    
+    # Determine the starting index of valid sample after burn-in and step-length annealing
     total_iters = length(opt.prop_logs)
-    start_idx = Int(ceil(burn_in * total_iters)) + 1
+    burn_in_length = Int(ceil(burn_in * total_iters))
+    anneal_length = Int(ceil(anneal_ratio * total_iters))
+    start_idx = Int(burn_in_length + anneal_length) + 1
     
     # Extract axxepted samples after burn-in
     logs = opt.prop_logs
