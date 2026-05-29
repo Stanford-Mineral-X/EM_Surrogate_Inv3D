@@ -94,7 +94,7 @@ To run the notebooks successfully, you need to download these files and place th
       -> e.g., in VS Code:
             Seetings>Julia: Executable Path>/JULIA_PATH.
             ![VS Code Settings Screenshot](https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753)  
-       4. Make sure both Julia Path and LanguageServer are correctly directed in user's setting JSON file (Preference:Open User Settings (JSON) in VSCode). There should be two line as such:
+       4. Make sure both Julia Path and LanguageServer are correctly directed in user's setting JSON file (Preference:Open User Settings (JSON) in VSCode). Normally, this should be done once you complete previous step, but you can never be too careful... There should be two line as such:
        ```
        ...
        "julia.languageServerExecutablePath": "/Users/YOUR_NAME/.juliaup/bin/julia",  
