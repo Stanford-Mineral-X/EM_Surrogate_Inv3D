@@ -225,11 +225,23 @@ function plot_acf(
     """
     Function to calculate and plot autocorrelation for each parameter
     """
-    
-    # Discard burn-in period
+
+    # Sanity check
     full_chain = opt_result.chain
-    N_total = length(full_chain)
-    start_idx = max(1, Int(floor(N_total * burn_in_ratio)))    # Find the index of the first valid sample
+    N_total = length(full_chain)    # Get length of the MCMC chain
+
+    # Hard constraint 1: Total ratio cannot exceed 100%
+    @assert burn_in_ratio + anneal_ratio <= 1.0 "The sum of burn_in_ratio ($burn_in_ratio) and anneal_ratio ($anneal_ratio) cannot be greater than 1.0!"
+
+    # Soft suggestion: Warn if the optimization/warmup phase takes up too much of the chain
+    if burn_in_ratio + anneal_ratio > 0.5
+        @warn "The combined burn-in and annealing ratio is high ($(burn_in_ratio + anneal_ratio) > 0.5). More than half of the samples will be discarded as transient phases!"
+    end
+
+    # Discard burn-in and annealing periods
+    burn_in_length = max(1, Int(floor(N_total * burn_in_ratio)))    
+    anneal_length = max(1, Int(floor(N_total * anneal_ratio)))
+    start_idx = Int(burn_in_length + anneal_length) + 1   # Find the index of the first valid sample
     chain = full_chain[start_idx:end]
     N_iter = length(chain)
     
@@ -292,17 +304,29 @@ function print_ess_report(
     opt_result,
     param_names; 
     max_lag::Int=200,
-    burn_in_ratio=0.2 
+    burn_in_ratio=0.2,
+    anneal_ratio=0.3
     )
     """
     Function to calculate ESS based on ACF
     """
 
     full_chain = opt_result.chain
-    n_full = length(full_chain)
+    n_full = length(full_chain)    # Get length of the MCMC chain
+
+    # Sanity check
+    # Hard constraint 1: Total ratio cannot exceed 100%
+    @assert burn_in_ratio + anneal_ratio <= 1.0 "The sum of burn_in_ratio ($burn_in_ratio) and anneal_ratio ($anneal_ratio) cannot be greater than 1.0!"
+
+    # Soft suggestion: Warn if the optimization/warmup phase takes up too much of the chain
+    if burn_in_ratio + anneal_ratio > 0.5
+        @warn "The combined burn-in and annealing ratio is high ($(burn_in_ratio + anneal_ratio) > 0.5). More than half of the samples will be discarded as transient phases!"
+    end
     
     # Discard burn-in period
-    start_idx = max(1, Int(floor(n_full * burn_in_ratio)))
+    burn_in_length = max(1, Int(floor(n_full * burn_in_ratio)))
+    anneal_length = max(1, Int(floor(n_full * anneal_ratio)))
+    start_idx = Int(burn_in_length + anneal_length) + 1
     chain = full_chain[start_idx:end]
     n_total = length(chain)
 
@@ -507,8 +531,13 @@ function extract_accepted_samples(
     """
 
     # Sanity check
-    # Hard constraint: Total ratio cannot exceed 100%
+    total_iters = length(opt.prop_logs)    # Get length of the MCMC chain
+
+    # Hard constraint 1: Total ratio cannot exceed 100%
     @assert burn_in_ratio + anneal_ratio <= 1.0 "The sum of burn_in_ratio ($burn_in_ratio) and anneal_ratio ($anneal_ratio) cannot be greater than 1.0!"
+
+    # Hard constraint 2: Number of valid samples must be sufficient
+    @assert total_iters * (1 - (burn_in_length + anneal_length)) > N_needed * thinning "Not enough valid samples after burn-in and annealing to meet the N_needed with thinning. Consider reducing burn_in_ratio, anneal_ratio, or thinning."
     
     # Soft suggestion: Warn if the optimization/warmup phase takes up too much of the chain
     if burn_in_ratio + anneal_ratio > 0.5
@@ -516,17 +545,16 @@ function extract_accepted_samples(
     end
     
     # Determine the starting index of valid sample after burn-in and step-length annealing
-    total_iters = length(opt.prop_logs)
-    burn_in_length = Int(ceil(burn_in * total_iters))
+    burn_in_length = Int(ceil(burn_in_ratio * total_iters))
     anneal_length = Int(ceil(anneal_ratio * total_iters))
     start_idx = Int(burn_in_length + anneal_length) + 1
     
-    # Extract axxepted samples after burn-in
+    # Extract axxepted samples after burn-in and annealing
     logs = opt.prop_logs
     accepted_after_burnin = findall(i -> i >= start_idx && logs[i].accepted, 1:total_iters)
     
     if isempty(accepted_after_burnin)
-        @warn "After burn-in, no accepted samples were found. Chain might be stuck."
+        @warn "After burn-in and annealing, no accepted samples were found. Chain might be stuck."
         return [opt.chain[end]] 
     end
 
