@@ -24,6 +24,7 @@ function dynamic_weighted_mse(
     Mean squared error where each time-channel (block of length `N_obs`) is weighted
     by the inverse of the dynamic range of the true data in that channel.
     """
+    
     channel_weighted_mses = zeros(N_time)
     dr_weights = zeros(N_time)
     channel_MSE = zeros(N_time)    
@@ -56,6 +57,7 @@ function randsingle_controlled(
     """
     A modified GeoStats `randsingle` function that accepts a pre-generated random grid `w`.
     """
+    
     (; var, F, z̄, dinds) = preproc; 
     f = process.func; 
     μ = process.mean; 
@@ -79,7 +81,15 @@ function clamp_unit_interval(u; ε=1e-12)
 end
 
 
-function ppm_sampler_uniform_deterministic(u_old::Real, r::Real, u_perturb::Real)
+function ppm_sampler_uniform_deterministic(
+    u_old::Real, 
+    r::Real, 
+    u_perturb::Real
+    )
+    """
+    A function to perform Probability Perturbation Method (PPM)
+    """
+    
     lower_bound = r * u_old
     upper_bound = 1 - r + lower_bound
     if lower_bound < u_perturb < upper_bound
@@ -194,6 +204,9 @@ function eval_em_forward(
 end
 
 
+"""
+A struct to record the proposal details in each iteration.
+"""
 struct ProposalLog
     iter::Int
     loss::Float64
@@ -207,6 +220,9 @@ struct ProposalLog
 end
 
 
+"""
+A struct to hold the state of MCMC optimization.
+"""
 struct MCMCState
     loss::Float64
     channel_MSE::Vector{Float64}
@@ -245,6 +261,7 @@ function metropolis_step_delay_reject(
     U1_param_sigma_mean = [rand(rng) for _ in 1:1]
     U1_param_sigma_std = [rand(rng) for _ in 1:1]
 
+    # Make the first new proposal
     prop1 = eval_em_forward(
         rng, grid, target_signal, signal_error_std, param_ranges,
         U1_field, U1_param_spatial, U1_param_sigma_mean, U1_param_sigma_std,
@@ -278,6 +295,7 @@ function metropolis_step_delay_reject(
         U2_param_sigma_mean = [rand(rng) for _ in 1:1]
         U2_param_sigma_std = [rand(rng) for _ in 1:1]
 
+        # If the first new proposal is rejected, try the second one
         prop2 = eval_em_forward(
             rng, grid, target_signal, signal_error_std, param_ranges,
             U2_field, U2_param_spatial, U2_param_sigma_mean, U2_param_sigma_std,
