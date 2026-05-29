@@ -432,7 +432,7 @@ end
 
 function plot_all_hyper_params_history(
     opt_list,
-    param_names
+    param_names,
     param_ranges
     )
     """
@@ -496,7 +496,7 @@ function extract_accepted_samples(
     N_needed=50, 
     thinning=1,
     burn_in_ratio=0.2,
-    anneal_ratio=0.3
+    anneal_ratio=0.3,
     loss_threshold=nothing,
     sort_by_loss=true
     )
@@ -993,7 +993,7 @@ end
 
 
 function plot_hyper_params_cross(
-    acc_samples
+    acc_samples,
     param_names 
     )
     """
