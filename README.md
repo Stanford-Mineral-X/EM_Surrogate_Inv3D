@@ -94,7 +94,7 @@ To run the notebooks successfully, you need to download these files and place th
       -> e.g., in VS Code:
             Seetings>Julia: Executable Path>/JULIA_PATH.
             ![VS Code Settings Screenshot](https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753)  
-       4. Make sure both Julia Path and LanguageServer are correctly directed in user's setting JSON file (Preference:Open User Settings (JSON) in VSCode). Normally, this should be done once you complete previous step, but you can never be too careful... There should be two line as such:
+       4. Make sure both Julia Path and LanguageServer are correctly directed in user's setting JSON file (Preference:Open User Settings (JSON) in VSCode). Normally, this should be done automatically once you complete previous step, but you can never be too careful... There should be two line as such:
        ```
        ...
        "julia.languageServerExecutablePath": "/Users/YOUR_NAME/.juliaup/bin/julia",  
@@ -104,14 +104,6 @@ To run the notebooks successfully, you need to download these files and place th
 
 ### 2. Running the Inversion (Recommended Workflow)
 This repository consists of detailed research scripts rather than a packaged command-line app. **It is designed to be run entirely within an IDE (Visual Studio Code is highly recommended)** so you can easily adjust parameters, run code blocks interactively, and inspect the inversion results.
-
-1. **Open Project**: Open the repository folder (specifically the `"Stochastic inversion with McMC"` directory) in **VS Code**.
-2. **Install Extensions**: Make sure the official **Julia** extension is installed in VS Code.
-3. **Initialize Environment**: 
-   * Open any `.jl` file (e.g., `3D_EM_Stochastic_Inv.jl`).
-   * Open the Julia REPL inside VS Code (shortcut: `Alt+J` then `Alt+O`, or `Option+J` then `Option+O` on Mac).
-   * Switch to Pkg mode by pressing `]` in the REPL, and run `instantiate` to automatically download all required dependencies.
-4. **Execute Script**: You can now run the main script `3D_EM_Stochastic_Inv.jl` line-by-line (using `Shift+Enter`) or by clicking the **"Run File in REPL"** triangle button in the top right corner.
 
 Note: Inversion results and chains will be automatically saved into the Outputs/ folder or serialized as `.jld2` files.
 
