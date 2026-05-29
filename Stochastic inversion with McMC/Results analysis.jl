@@ -98,7 +98,8 @@ plot_r_evolution(
 
 # Check autocorrelation of MCMC chain to see if it has good mixing and convergence
 plot_acf(
-    opt; 
+    opt,
+    param_names; 
     max_lag=200,
     burn_in_ratio=0.2
 );
