@@ -79,8 +79,8 @@ To run the notebooks successfully, you need to download these files and place th
 ### 1. Requirements & Prerequisites
 * For Python Jupyter Notebook:
   **Python (v3.11)**:
-   - Ensure you have `PyTorch` installed to load the `.pth` surrogate weights.
-   - Actually, **_there is no need to run Python code unless if you want to play with them._**
+   - Ensure you have `PyTorch` installed, so that the surrogate model can load the weights from `.pth` file.
+   - For falsification and training code, **_there is no need to run Python code unless if you want to play with them._** You can jump to Julia code for inversion.
 * For MCMC stochastic inversion code in Julia:
   **Julia (v1.12.6)**:
    - * **VS Code Configuration**:
