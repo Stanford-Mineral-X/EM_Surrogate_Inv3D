@@ -89,8 +89,10 @@ To run the notebooks successfully, you need to download these files and place th
              <img width="1208" height="804" alt="Screenshot 2026-05-28 at 17 33 24" src="https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753" />  
 
              To find out JULIA_PATH, run "which Julia" in terminal.  
-             ```(base) YOUR_PC_NAME ~ % which Julia
-                /Users/$NAME/.juliaup/bin/Julia"
+             ```bash
+             which julia
+             # Output example: /Users/YOUR_NAME/.juliaup/bin/julia
+             ```
   
 
 ### 2. Running the Inversion (Recommended Workflow)
