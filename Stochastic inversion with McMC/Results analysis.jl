@@ -13,9 +13,6 @@ using LinearAlgebra
 using JLD2
 using Plots
 
-# ============================================
-# --- Load files of truth ---
-# ============================================
 # Load Rx locations
 Rx_loc = CSV.read(
     joinpath(current_dir, "../Prior falsification/Test data/Rx_loc.csv"), 
@@ -42,23 +39,15 @@ N_time = length(EMdata_true) / N_obs |> Int;
 # GP_hyper_true = CSV.read(joinpath(current_dir, "Test data/GP_hyper_true.csv"), DataFrame; header=false) |> Matrix;
 # GP_hyper_true = vec(GP_hyper_true');
 
-# ============================================
-# --- Load handy functions ---
-# ============================================
+# Load handy functions
 include("Plotting utils.jl");
 
-# ============================================
-# ----Define the grid for reconstruction------
-# ============================================
-# Define modeling space
+# Define the grid for reconstruction
 nx, ny, nz = 45, 20, 45;
 dx, dy, dz = 4000/nx, 2000/ny, 4000/nz; # in meters
 grid = CartesianGrid((0, 0, 0), (4000, 2000, 4000), dims=(nx, ny, nz));
 
-# ============================================
-# --- Examine truth ---
-# ============================================
-# Plot true conductivity model
+# Examine truth conductivity model if available
 if @isdefined(sigma_true)
     sigma_true = reshape(sigma_true, (nx, ny, nz));
     plot_sigma(
@@ -112,19 +101,6 @@ print_ess_report(
     opt; 
     max_lag=200
 );
-
-# Plot true conductivity model
-if @isdefined(sigma_true)
-    sigma_true = reshape(sigma_true, (nx, ny, nz));
-    plot_sigma(
-        sigma_true;
-        title_inverted="True Conductivity Model",
-        slice_x=0 , slice_y=16 , slice_z=45,
-        view_azimuth=-120, view_elevation=-5,
-        scale="ln",
-        colorrange=(-5, 2)
-    );
-end;
 
 # Extract accepted samples from MCMC chain for posterior analysis and visualization
 N_exam = 10000;
