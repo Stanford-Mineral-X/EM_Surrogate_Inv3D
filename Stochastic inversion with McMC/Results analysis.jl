@@ -1,3 +1,11 @@
+# Activate environment and solve dependencies
+using Pkg
+Pkg.precompile();    # Precompile packages for faster loading
+current_dir = (@__DIR__);    # Set up current directory
+Pkg.activate((current_dir));    # Activate the current folder as the environment
+Pkg.instantiate();    # Install dependencies from Project.toml
+
+# --- Imports packages used in this script---
 using Statistics
 using CSV
 using DataFrames
@@ -8,10 +16,6 @@ using Plots
 # ============================================
 # --- Load files of truth ---
 # ============================================
-
-# Set up data directory
-current_dir =  (@__DIR__);    # Got the path of current folder where this script is located
-
 # Load Rx locations
 Rx_loc = CSV.read(
     joinpath(current_dir, "../Prior falsification/Test data/Rx_loc.csv"), 
@@ -21,7 +25,7 @@ Rx_loc = CSV.read(
 
 # Load true EM data;
 EMdata_true = CSV.read(
-    joinpath(current_dir, "../Prior falsification/Test data/EMdata_true.csv"), 
+    joinpath(current_dir, "../Prior falsification/Test data/EMdata.csv"), 
     DataFrame; 
     header=false
 ) |> Matrix;
@@ -31,7 +35,7 @@ EMdata_true = Float32.(vec(EMdata_true'));
 N_obs = size(Rx_loc)[1];
 N_time = length(EMdata_true) / N_obs |> Int;
 
-# # Load true conductivity model
+# # Load true conductivity model, if you running synthetic test
 # sigma_true = CSV.read(joinpath(current_dir, "Prior falsification/Test data/sigma_true.csv"), DataFrame; header=false) |> Matrix;
 
 # # Load true Gaussian Process hyper-parameters
@@ -41,8 +45,6 @@ N_time = length(EMdata_true) / N_obs |> Int;
 # ============================================
 # --- Load handy functions ---
 # ============================================
-Pkg.activate((current_dir))    # Activate the current folder as the environment
-Pkg.instantiate()   
 include("Plotting utils.jl");
 
 # ============================================
@@ -52,6 +54,34 @@ include("Plotting utils.jl");
 nx, ny, nz = 45, 20, 45;
 dx, dy, dz = 4000/nx, 2000/ny, 4000/nz; # in meters
 grid = CartesianGrid((0, 0, 0), (4000, 2000, 4000), dims=(nx, ny, nz));
+
+# ============================================
+# --- Examine truth ---
+# ============================================
+# Plot true conductivity model
+if @isdefined(sigma_true)
+    sigma_true = reshape(sigma_true, (nx, ny, nz));
+    plot_sigma(
+        sigma_true;
+        title_inverted="True Conductivity Model",
+        slice_x=0 , slice_y=16 , slice_z=45,
+        x_length=4000, y_length=2000, z_length=4000, origin=(-7224.47916667, -4717.1875    , -5758.33333333), 
+        view_azimuth=-120, view_elevation=-5,
+        scale="ln",
+        colorrange=(-3, 1)
+    );
+end;
+
+# Plot true data
+plot_signal_comparison(
+    EMdata_true, 
+    [];
+    signal_error_std=nothing,
+    compared_label="True Data",
+    N_time=N_time,
+    N_obs=N_obs,
+    Rx_loc=Rx_loc, 
+);
 
 # ============================================
 # --- Examine results ---
