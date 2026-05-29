@@ -83,16 +83,16 @@ To run the notebooks successfully, you need to download these files and place th
    - Actually, **_there is no need to run Python code unless if you want to play with them._**
 * For MCMC stochastic inversion code in Julia:
   **Julia (v1.12.6)**:
-   - Ensure the Julia executable is installed and added to your system PATH.
+   - * **VS Code Configuration**: If VS Code cannot find your Julia executable, open **Settings**, search for `Julia: Executable Path`, and paste your `JULIA_PATH`.  
       -> e.g., in VS Code:
-             Seetings>Julia: Executable Path>/JULIA_PATH.
-             <img width="1208" height="804" alt="Screenshot 2026-05-28 at 17 33 24" src="https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753" />  
+            Seetings>Julia: Executable Path>/JULIA_PATH.
+            <img width="1208" height="804" alt="Screenshot 2026-05-28 at 17 33 24" src="https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753" />  
 
-             To find out JULIA_PATH, run "which Julia" in terminal.  
-             ```bash
-             which julia
-             # Output example: /Users/YOUR_NAME/.juliaup/bin/julia
-             ```
+            * *Tip: To find your `JULIA_PATH`, run `which julia` (or `which Julia`) in your terminal. For example:*
+                ```bash
+                which julia
+                # Output example: /Users/YOUR_NAME/.juliaup/bin/julia
+                ```
   
 
 ### 2. Running the Inversion (Recommended Workflow)
