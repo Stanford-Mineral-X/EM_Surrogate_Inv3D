@@ -86,9 +86,9 @@ To run the notebooks successfully, you need to download these files and place th
    - * **VS Code Configuration**: If VS Code cannot find your Julia executable, open **Settings**, search for `Julia: Executable Path`, and paste your `JULIA_PATH`.  
       -> e.g., in VS Code:
             Seetings>Julia: Executable Path>/JULIA_PATH.
-            <img width="1208" height="804" alt="Screenshot 2026-05-28 at 17 33 24" src="https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753" />  
+            ![VS Code Settings Screenshot](https://github.com/user-attachments/assets/ecb7da41-8944-4b3c-b710-5ad01ffb3753)  
 
-            * *Tip: To find your `JULIA_PATH`, run `which julia` (or `which Julia`) in your terminal. For example:*
+            * *Tip: To find your `JULIA_PATH`, run `which julia` (or `which Julia`) in your terminal. For example:*  
                 ```bash
                 which julia
                 # Output example: /Users/YOUR_NAME/.juliaup/bin/julia
