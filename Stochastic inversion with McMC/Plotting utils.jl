@@ -5,7 +5,7 @@ using KernelDensity
 using CSV, DataFrames
 using Statistics, Distributions
 using GeoStats, GeoStatsBase
-using Printf
+using Printf    # Have to import this standard library. Stupid Julia pops error about not having this occasionally
 
 
 """
