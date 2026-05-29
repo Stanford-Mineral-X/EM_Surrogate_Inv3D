@@ -1,19 +1,20 @@
-## --- Package Imports ---
+# Activate environment and solve dependencies
 using Pkg
+Pkg.precompile();    # Precompile packages for faster loading
+current_dir = (@__DIR__);    # Set up current directory
+Pkg.activate((current_dir));    # Activate the current folder as the environment
+Pkg.instantiate();    # Install dependencies from Project.toml
+
+# --- Imports packages used in this script---
 using GeoStats, GeoStatsBase, GeoStatsProcesses
 using Meshes
 using CSV, DataFrames
 using Random, Distributions, Statistics
 using JLD2: jldsave
 
-
 # ============================================
 # --- Load files ---
 # ============================================
-
-# Set up current directory
-current_dir = (@__DIR__);
-
 # Load Rx locations
 Rx_loc = CSV.read(
     joinpath(current_dir, "../Prior falsification/Test data/Rx_loc.csv"), 
@@ -44,10 +45,7 @@ N_time = length(EMdata_true) / N_obs |> Int;
 # ============================================
 # --- Main test ---
 # ============================================
-
 # Load all top-level functions from ppm module, from same folder
-Pkg.activate((current_dir))    # Activate the current folder as the environment
-Pkg.instantiate()    # Install dependencies from Project.toml
 include("PPM MCMC utils.jl");
 
 # Import surrogate model from EM forward modeling
@@ -62,7 +60,7 @@ dx, dy, dz = 4000/nx, 2000/ny, 4000/nz; # in meters
 grid = CartesianGrid((0, 0, 0), (4000, 2000, 4000), dims=(nx, ny, nz));
 
 # Set number of total realizations
-Max_iter = 5;
+Max_iter = 100;
 
 # Inversion using PPM with EM surrogate model
 param_ranges = (
