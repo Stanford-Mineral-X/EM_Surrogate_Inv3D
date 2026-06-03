@@ -791,7 +791,7 @@ function plot_signal_comparison(
             fig[row_idx, col_idx],
             title = "Time Channel $(j)",
             xlabel = "X-offset (m)",
-            ylabel = "Bz Data (nT)",
+            ylabel = "Bz Data (pT)",
             titlesize = 14,
             
             # --- Label font size & bold ---
